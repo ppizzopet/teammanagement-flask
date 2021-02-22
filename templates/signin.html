@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TeamManagement | Sign in</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="HandheldFriendly" content="true">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+    <form action="/signin" method="POST" id="signinform">
+        <label class="text" for="email">Email: </label></br>
+        <input class="spacing" type="text" name="email" id="email"/></br>
+        <label class="text" for="email">Password: </label></br>
+        <input class="spacing" type="password" name="password" id="password"/></br>
+        <button class="submitbut">Sign In</button>
+    </form>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert">
+        <h2 class="text">{{ messages[0] }}</h2>
+    </div>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>

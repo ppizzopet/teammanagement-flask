@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TeamManagement</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="HandheldFriendly" content="true">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
+    <script>
+        {% if current_user.is_authenticated and not current_user.team == "None" and current_user.role == "Manager" %}
+        function removebut(id){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/remove/"+id, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                taskid: id
+            }));
+            window.location.reload();
+        }
+        {% elif current_user.is_authenticated and not current_user.team == "None" and current_user.role == "Worker" %}
+        function allowDrop(ev) {
+          ev.preventDefault();
+        }
+
+        function drag(ev) {
+          ev.dataTransfer.setData("text/plain", ev.target.id);
+        }
+
+        function dropdone(ev) {
+          ev.preventDefault();
+          var data = ev.dataTransfer.getData("text/plain");
+          ev.target.appendChild(document.getElementById(data));
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/setdone/"+data, true);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.send(JSON.stringify({
+              taskid: data
+          }));
+          window.location.reload();
+        }
+
+        function droptodo(ev) {
+          ev.preventDefault();
+          var data = ev.dataTransfer.getData("text/plain");
+          ev.target.appendChild(document.getElementById(data));
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/settodo/"+data, true);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.send(JSON.stringify({
+              taskid: data
+          }));
+          window.location.reload();
+        }
+        {% endif %}
+    </script>
+</head>
+<body>
+    <div id="team">
+        <h3 id="teamtext">TEAM</h3>
+            {% if not current_user.is_authenticated or current_user.team == "None" %}
+            <p id="nothingyet">NOTHING YET HERE</p>
+            {% else %}
+            <div style="margin-top: 40%;" ></div>
+            {% for i in range(size) %}
+            <div id="teammember" style="margin-top: 10%; padding-left: 5%;">
+                <img src="{{ url_for('static', filename='images/user.png') }}" alt="User" class="usericon">
+                <h3 id="username" >{{ names[i] }}</h3>
+                <p id="userposition" >{{ roles[i] }}</p>
+            </div>
+            {% endfor %}
+            {% endif  %}
+    </div>
+
+    {% if not current_user.is_authenticated or current_user.team == "None"  %}
+    <div id="container">
+        {% if not current_user.is_authenticated %}
+            <p class="text">Oh, you aren't signed?</p>
+            <p class="text"><a href="/signin">Sign in</a> or if you don't have account <a href="/signup">Sign up</a>.</p>
+        {% elif current_user.is_authenticated and current_user.team == "None" %}
+            <p class="text">There isn't any team that you are in</p>
+            <p class="text"><a href="/createteam">Create one</a> or you can wait for invite.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if current_user.is_authenticated and not current_user.team == "None" and current_user.role == "Worker" %}
+    <div id="tasks">
+        <h3 class="taskstext">TASKS</h3>
+        <div style="margin-left: 25%; position: absolute; padding-top: 7.5%; width: 11.5%;" ondrop="droptodo(event)" ondragover="allowDrop(event)">
+            <h3 class="nomargin" style="text-align: center;">TODO</h3>
+            <div style="margin-top: 10%;" ></div>
+            {% for task in taskstodo %}
+            <div id="{{ task.id }}" class="task" ondragstart="drag(event)"  draggable="true">
+                <h3>{{ task.task }}</h3>
+                <p>Until {{ task.dueto }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="donetab" style="margin-left: 76%; position: absolute; padding-top: 7.5%; width: 11.5%;" ondrop="dropdone(event)" ondragover="allowDrop(event)">
+            <h3 class="nomargin" style="text-align: center;">DONE</h3>
+            <div style="margin-top: 10%;" ></div>
+            {% for task in tasksdone %}
+            <div id="{{ task.id }}" class="task" ondragstart="drag(event)"  draggable="true">
+                <h3>{{ task.task }}</h3>
+                <p>Until {{ task.dueto }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% elif current_user.is_authenticated and not current_user.team == "None" and current_user.role == "Manager" %}
+    <div id="managetask">
+        <h3 class="taskstext">MANAGE TASKS</h3>
+        <h3 class="taskstext" style="margin-top: 5%;">invite/{{ team.invite }}</h3>
+        <button id="asignbut" style="position: absolute; left: 55%; top: 0%; transform: translate(-50%, -50%);" onclick="location.href= '{{ url_for('assigntask') }}';" >Assign task</button>
+        <div style="margin-left: 25%; position: absolute; padding-top: 7.5%; width: 11.5%;" >
+            <h3 class="nomargin" style="text-align: center;">TODO</h3>
+            <div style="margin-top: 10%;" ></div>
+            {% for task in taskstodo %}
+            <div class="task">
+                <h3>{{ task.task }}</h3>
+                <p>For {{ task.foruser }}</p>
+                <p>Until {{ task.dueto }}</p>
+                <button onclick="removebut({{ task.id }})" class="removebutton">x</button>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="donetab" style="margin-left: 76%; position: absolute; padding-top: 7.5%; width: 11.5%;">
+            <h3 class="nomargin" style="text-align: center;">DONE</h3>
+            <div style="margin-top: 10%;" ></div>
+            {% for task in tasksdone %}
+            <div class="task">
+                <h3>{{ task.task }}</h3>
+                <p>For {{ task.foruser }}</p>
+                <p>Until {{ task.dueto }}</p>
+                <button onclick="removebut({{ task.id }})" class="removebutton">x</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</body>
+</html>

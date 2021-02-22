@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TeamManagement | Assign task</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="HandheldFriendly" content="true">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+    <form action="/assigntask" method="POST" id="assigntaskform">
+        <label class="text" for="taskname">Task: </label></br>
+        <input class="spacing" type="text" name="taskname" id="taskname"/></br>
+        <label class="text" for="dueto">Until: </label></br>
+        <input class="spacing" type="text" name="dueto" id="dueto" placeholder="DD.MM.YYYY"/></br>
+        <label class="text" for="for">For: </label></br>
+        <input class="spacing" type="text" name="for" id="for"/></br>
+        <button class="submitbut">Assign task</button>
+    </form>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert">
+        <h2 class="text">{{ messages[0] }}</h2>
+    </div>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>
