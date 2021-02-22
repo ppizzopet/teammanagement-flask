@@ -2,6 +2,7 @@
 
 ## How to run
 
+1. Install requirements.
 1. Run makedb.py to make databases
 2. Run app.py
 
