@@ -18,7 +18,7 @@
 3. For need to be user with name from your team.
 4. Click on assign task.
 
-## How to join team (You cant be in team)
+## How to join team (You can't be in team)
 1. Manager should send you and invite that is one Homepage (example: invite/JSBF).
 2. Go to your homepage and to url address type / and invite (example: /invite/JSBF).
 3. Press enter.
