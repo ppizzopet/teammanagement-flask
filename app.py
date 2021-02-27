@@ -220,7 +220,7 @@ def assigntask():
     return render_template("assigntask.html")
 
 
-@app.route("/asigntask", methods=['POST'])
+@app.route("/assigntask", methods=['POST'])
 @login_required
 def assigntask_post():
     if current_user.role == "Manager":
